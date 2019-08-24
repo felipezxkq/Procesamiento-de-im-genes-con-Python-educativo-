@@ -58,7 +58,7 @@ class ventanaHistograma(wx.Frame):
         self.histograma = hist(self.panel, [1, 5, 8, 5, 10, 1, 1, 8, 3, 7],
         range(15))
         self.sizer.Add(self.histograma, pos=(1, 1), span=(3, 0),
-            flag=wx.TOP | wx.LEFT | wx.RIGHT, border=5)
+            flag=wx.TOP | wx.LEFT | wx.RIGHT, border=20)
 
         self.panel.SetSizer(self.sizer)
         self.sizer.Fit(self)
@@ -127,19 +127,25 @@ class ventanaHistograma(wx.Frame):
 # clase de un panel con histograma dentro
 class hist(wx.Panel):
     def __init__(self, parent, list1, list2):
-        wx.Panel.__init__(self, parent, -1, size=(600, 600))
+        wx.Panel.__init__(self, parent, -1, size=(600, 300))
 
         self.bins = list2
 
         self.figure = matplotlib.figure.Figure()
         self.axes = self.figure.add_subplot(111)
         self.axes.hist(list1, self.bins)
+        self.figure.set_figwidth(8)
+        self.figure.set_dpi(60)
         self.canvas = FigureCanvas(self, -1, self.figure)
+
+
 
     def replaceHist(self, list1, list2, colorH):
         self.figure = matplotlib.figure.Figure()
         self.axes = self.figure.add_subplot(111)
         self.axes.hist(list1, list2, color=colorH)
+        self.figure.set_figwidth(8)
+        self.figure.set_dpi(60)
         self.canvas = FigureCanvas(self, -1, self.figure)
 
 
