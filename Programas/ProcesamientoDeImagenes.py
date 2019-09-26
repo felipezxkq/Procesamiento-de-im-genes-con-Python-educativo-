@@ -97,11 +97,18 @@ class procesamientoImagenes(wx.Frame):
         self.sizer.Add(self.st3, pos=(5, 0),
         flag=wx.LEFT | wx.BOTTOM, border=25)
 
+        # botón para volver a la imagen original
+        originalButton = wx.Button(self.panel, label='Volver a original',
+        size=(140, 80))
+        originalButton.Bind(wx.EVT_BUTTON, self.volverOriginal)
+        self.sizer.Add(originalButton, pos=(6, 0), span=(0, 0),
+        flag=wx.BOTTOM | wx.TOP | wx.LEFT, border=25)
+
         # panel donde deberia ir la imagen
-        self.panelDeImagen = wx.lib.scrolledpanel.ScrolledPanel(self.panel ,-1,
+        self.panelDeImagen = wx.lib.scrolledpanel.ScrolledPanel(self.panel , -1,
         size=(600, 600), style=wx.SIMPLE_BORDER)
         self.panelDeImagen.SetBackgroundColour('#FFFFFF')
-        self.sizer.Add(self.panelDeImagen, pos=(0, 2), span=(6, 1),
+        self.sizer.Add(self.panelDeImagen, pos=(0, 2), span=(7, 1),
         flag=wx.TOP | wx.LEFT | wx.BOTTOM | wx.RIGHT, border=25)
 
         # sizer dentro del panel de la imagen
@@ -168,8 +175,6 @@ class procesamientoImagenes(wx.Frame):
 
     # convierte a escala de grises con una ponderacion normal
     def convertir(self, event):
-
-        # Metodo del promedio para transformar rgb a grayscale
         for i in range(self.width):
             for j in range(self.height):
                 redW = round(self.imgOriginal.GetRed(i, j) * 0.333, 0)
@@ -185,7 +190,6 @@ class procesamientoImagenes(wx.Frame):
 
     # convierte a gris usando la ponderacion "luminosity"
     def convertirLuminosity(self, event):
-
         for i in range(self.width):
             for j in range(self.height):
                 redW = round(self.imgOriginal.GetRed(i, j) * 0.21, 0)
@@ -238,6 +242,16 @@ class procesamientoImagenes(wx.Frame):
             self.width = self.img.GetWidth()
             self.height = self.img.GetHeight()
 
+    # metodo del boton de volver a imagen original
+    def volverOriginal(self, event):
+        self.img = self.imgOriginal
+        self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
+        self.panel.Refresh()
+        self.estadoPunto1 = False
+        self.estadoPunto2 = False
+        self.width = self.img.GetWidth()
+        self.height = self.img.GetHeight()
+
     # FUNCIONES USADAS PARA HACER LOS HISTOGRAMAS
     def getRedValues(self):
         lista = []
@@ -277,14 +291,13 @@ class procesamientoImagenes(wx.Frame):
 
     # FUNCION PARA EQUALIZAR IMAGEN
     def equalizar(self, event):
-
         if self.esBlancoNegro:
-            intensidadesDes = self.getBlueValues()
-            intensidadesOrd = np.zeros(256, dtype=int)
-            for i in range(len(intensidadesDes)):
-                intensidadesOrd[intensidadesDes[i]] += 1
+            intensidades_desordenadas = self.getBlueValues()
+            intensidades_ordenadas = np.zeros(256, dtype=int)
+            for i in range(len(intensidades_desordenadas)):
+                intensidades_ordenadas[intensidades_desordenadas[i]] += 1
 
-            intensidadesAcum = intensidadesOrd.copy()
+            intensidadesAcum = intensidades_ordenadas.copy()
             for i in np.arange(1, 256):
                 intensidadesAcum[i] = intensidadesAcum[i - 1] + intensidadesAcum[i]
 
@@ -300,11 +313,11 @@ class procesamientoImagenes(wx.Frame):
             self.panel.Refresh()
         else:
             # con blue
-            intensidadesDesB = self.getBlueValues()
-            intensidadesOrdB = np.zeros(256, dtype=int)
-            for i in range(len(intensidadesDesB)):
-                intensidadesOrdB[intensidadesDesB[i]] += 1
-            intensidadesAcumB = intensidadesOrdB.copy()
+            intensidades_desordenadas_blue = self.getBlueValues()
+            intensidades_ordenadas_blue = np.zeros(256, dtype=int)
+            for i in range(len(intensidades_desordenadas_blue)):
+                intensidades_ordenadas_blue[intensidades_desordenadas_blue[i]] += 1
+            intensidadesAcumB = intensidades_ordenadas_blue.copy()
             for i in np.arange(1, 256):
                 intensidadesAcumB[i] = intensidadesAcumB[i - 1] + intensidadesAcumB[i]
 
