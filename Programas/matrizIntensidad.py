@@ -1,9 +1,8 @@
 def main():
 
-    fh = open("matriz.txt", "r")
-    #print(fh.read())
+    archivo = open("matriz.txt", "r")
 
-    data = fh.readlines()
+    data = archivo.readlines()
     matriz = list()
     for line in data:
         listaAux = list()
@@ -11,10 +10,10 @@ def main():
             listaAux.append(int(num))
         matriz.append(listaAux)
 
-    dibujaMatriz(matriz)
+    escribirMatriz(matriz)
 
 
-def dibujaMatriz(M):
+def escribirMatriz(M):
     for i in range(len(M)):
         for j in range(len(M[i])):
             print(str(M[i][j]) + " ", end='')

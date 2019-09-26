@@ -38,12 +38,17 @@ class ventanaPixeles(wx.Frame):
         self.sizer.Add(self.st3, pos=(3, 0),
         flag=wx.LEFT | wx.BOTTOM, border=25)
 
+        # Texto que indica las coordenadas de la imagen señaladas por el mouse
+        self.textoCoordenadas = wx.StaticText(self.panel, label='(X, Y) = ')
+        self.sizer.Add(self.textoCoordenadas, pos=(4, 0), span=(2, 2),
+        flag = wx.LEFT, border=25)
+
         # LUGAR DONDE DEBERIA IR LA IMAGEN
         img = wx.Image(240, 240)
         self.imgCtrl = wx.StaticBitmap(self.panel, wx.ID_ANY,
              wx.Bitmap(img), size=(240, 240))
         self.imgCtrl.Bind(wx.EVT_MOTION, self.mouseOnPicture)
-        self.sizer.Add(self.imgCtrl, pos=(0, 2), span=(4, 2),
+        self.sizer.Add(self.imgCtrl, pos=(0, 2), span=(5, 0),
         flag=wx.TOP | wx.LEFT | wx.BOTTOM | wx.RIGHT, border=25)
 
         self.panel.SetSizer(self.sizer)
@@ -85,6 +90,9 @@ class ventanaPixeles(wx.Frame):
         # pone los valores RGB en texto
         self.st3.SetLabel("R: " + str(self.img.GetRed(x, y)) + ", G: " +
         str(self.img.GetGreen(x, y)) + ", B: " + str(self.img.GetBlue(x, y)))
+
+        # muestra las coordenadas en la imagen
+        self.textoCoordenadas.SetLabel("(X, Y) = (" + str(x) + ", " + str(y) + ")")
 
         # pinta un cuadrado (panel) con el valor rgb
         self.colorPanel.SetBackgroundColour(wx.Colour(self.img.GetRed(x, y),
