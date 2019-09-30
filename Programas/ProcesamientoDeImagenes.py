@@ -252,7 +252,7 @@ class procesamientoImagenes(wx.Frame):
         self.width = self.img.GetWidth()
         self.height = self.img.GetHeight()
 
-    # FUNCIONES USADAS PARA HACER LOS HISTOGRAMAS
+    # Funciones usadas para hacer los histogramas
     def getRedValues(self):
         lista = []
         for i in range(self.img.GetWidth()):
@@ -289,13 +289,14 @@ class procesamientoImagenes(wx.Frame):
         list(range(256)), 'blue')
         self.histo.Show()
 
-    # FUNCION PARA EQUALIZAR IMAGEN
+
+
     def equalizar(self, event):
         if self.esBlancoNegro:
             intensidades_desordenadas = self.getBlueValues()
-            intensidades_ordenadas = np.zeros(256, dtype=int)
+            intensidades_ordenadas = np.zeros(256, dtype=int)  # crea una lista con 255 índices con valor 0
             for i in range(len(intensidades_desordenadas)):
-                intensidades_ordenadas[intensidades_desordenadas[i]] += 1
+                intensidades_ordenadas[intensidades_desordenadas[i]] += 1  # suma 1 por cada píxel con este valor
 
             intensidadesAcum = intensidades_ordenadas.copy()
             for i in np.arange(1, 256):
