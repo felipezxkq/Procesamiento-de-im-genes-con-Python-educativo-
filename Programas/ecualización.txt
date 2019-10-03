@@ -1,0 +1,63 @@
+    def ecualizar(self, event):
+        if self.esBlancoNegro:
+            intensidades_desordenadas = self.getBlueValues()
+            intensidades_ordenadas = np.zeros(256, dtype=int)  # crea una lista con 255 índices con valor 0
+            for i in range(len(intensidades_desordenadas)):
+                intensidades_ordenadas[intensidades_desordenadas[i]] += 1  # suma 1 por cada píxel con este valor
+
+            intensidades_acumuladas = intensidades_ordenadas.copy()
+            for i in np.arange(1, 256):
+                intensidades_acumuladas[i] = intensidades_acumuladas[i - 1] + intensidades_acumuladas[i]
+
+            pixeles = self.width * self.height  # cantidad total de pixeles
+
+            for i in range(self.width):
+                for j in range(self.height):
+                    intensidad = self.img.GetRed(i, j)  # obtiene la intensidad en red en el punto (i, j) de la imagen
+                    nueva_intesidad = math.floor(intensidades_acumuladas[intensidad] * 255.0 / pixeles)
+                    self.img.SetRGB(i, j, int(nueva_intesidad), int(nueva_intesidad), int(nueva_intesidad))  # convierte el punto a la intensidad que se obtuvo en b
+
+            self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
+            self.panel.Refresh()
+        else:
+            # con blue
+            intensidades_desordenadas_blue = self.getBlueValues()
+            intensidades_ordenadas_blue = np.zeros(256, dtype=int)
+            for i in range(len(intensidades_desordenadas_blue)):
+                intensidades_ordenadas_blue[intensidades_desordenadas_blue[i]] += 1
+            intensidadesAcumB = intensidades_ordenadas_blue.copy()
+            for i in np.arange(1, 256):
+                intensidadesAcumB[i] = intensidadesAcumB[i - 1] + intensidadesAcumB[i]
+
+            # con red
+            intensidadesDesR = self.getRedValues()
+            intensidadesOrdR = np.zeros(256, dtype=int)
+            for i in range(len(intensidadesDesR)):
+                intensidadesOrdR[intensidadesDesR[i]] += 1
+            intensidadesAcumR = intensidadesOrdR.copy()
+            for i in np.arange(1, 256):
+                intensidadesAcumR[i] = intensidadesAcumR[i - 1] + intensidadesAcumR[i]
+
+            # con green
+            intensidadesDesG = self.getGreenValues()
+            intensidadesOrdG = np.zeros(256, dtype=int)
+            for i in range(len(intensidadesDesG)):
+                intensidadesOrdG[intensidadesDesG[i]] += 1
+            intensidadesAcumG = intensidadesOrdG.copy()
+            for i in np.arange(1, 256):
+                intensidadesAcumG[i] = intensidadesAcumG[i - 1] + intensidadesAcumG[i]
+
+            pixeles = self.width * self.height
+
+            for i in range(self.width):
+                for j in range(self.height):
+                    xR = self.img.GetRed(i, j)
+                    yR = math.floor(intensidadesAcumR[xR] * 255.0 / pixeles)
+                    xG = self.img.GetGreen(i, j)
+                    yG = math.floor(intensidadesAcumG[xG] * 255.0 / pixeles)
+                    xB = self.img.GetBlue(i, j)
+                    yB = math.floor(intensidadesAcumB[xB] * 255.0 / pixeles)
+                    self.img.SetRGB(i, j, int(yR), int(yG), int(yB))
+
+            self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
+            self.panel.Refresh()

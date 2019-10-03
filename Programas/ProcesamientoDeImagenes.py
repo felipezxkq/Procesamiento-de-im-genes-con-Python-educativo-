@@ -47,7 +47,7 @@ class procesamientoImagenes(wx.Frame):
         # crea menu de ecualizacion
         self.menuEcualizacion = wx.Menu()
         self.menuEcualizacion.Append(7, 'Ecualizar')
-        wx.EVT_MENU(self, 7, self.equalizar)
+        wx.EVT_MENU(self, 7, self.ecualizar)
 
         # crea menu de umbralizacion
         self.menuUmbralizacion = wx.Menu()
@@ -289,26 +289,24 @@ class procesamientoImagenes(wx.Frame):
         list(range(256)), 'blue')
         self.histo.Show()
 
-
-
-    def equalizar(self, event):
+    def ecualizar(self, event):
         if self.esBlancoNegro:
             intensidades_desordenadas = self.getBlueValues()
             intensidades_ordenadas = np.zeros(256, dtype=int)  # crea una lista con 255 índices con valor 0
             for i in range(len(intensidades_desordenadas)):
                 intensidades_ordenadas[intensidades_desordenadas[i]] += 1  # suma 1 por cada píxel con este valor
 
-            intensidadesAcum = intensidades_ordenadas.copy()
+            intensidades_acumuladas = intensidades_ordenadas.copy()
             for i in np.arange(1, 256):
-                intensidadesAcum[i] = intensidadesAcum[i - 1] + intensidadesAcum[i]
+                intensidades_acumuladas[i] = intensidades_acumuladas[i - 1] + intensidades_acumuladas[i]
 
-            pixeles = self.width * self.height
+            pixeles = self.width * self.height  # cantidad total de pixeles
 
             for i in range(self.width):
                 for j in range(self.height):
-                    a = self.img.GetRed(i, j)
-                    b = math.floor(intensidadesAcum[a] * 255.0 / pixeles)
-                    self.img.SetRGB(i, j, int(b), int(b), int(b))
+                    intensidad = self.img.GetRed(i, j)  # obtiene la intensidad en red en el punto (i, j) de la imagen
+                    nueva_intesidad = math.floor(intensidades_acumuladas[intensidad] * 255.0 / pixeles)
+                    self.img.SetRGB(i, j, int(nueva_intesidad), int(nueva_intesidad), int(nueva_intesidad))  # convierte el punto a la intensidad que se obtuvo en b
 
             self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
             self.panel.Refresh()
