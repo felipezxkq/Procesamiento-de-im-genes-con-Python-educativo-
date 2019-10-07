@@ -35,7 +35,7 @@ class procesamientoImagenes(wx.Frame):
         wx.EVT_MENU(self, 2, self.convertir)
         wx.EVT_MENU(self, 3, self.convertirLuminosity)
 
-        # crea menu de histogramas
+        # menu de histogramas
         self.menuHistogramas = wx.Menu()
         self.menuHistogramas.Append(4, 'Histograma de RED')
         self.menuHistogramas.Append(5, 'Histograma de GREEN')
@@ -44,15 +44,17 @@ class procesamientoImagenes(wx.Frame):
         wx.EVT_MENU(self, 5, self.mostrarHistogramaVerde)
         wx.EVT_MENU(self, 6, self.mostrarHistogramaAzul)
 
-        # crea menu de ecualizacion
+        # menu de ecualizacion
         self.menuEcualizacion = wx.Menu()
         self.menuEcualizacion.Append(7, 'Ecualizar')
         wx.EVT_MENU(self, 7, self.ecualizar)
 
-        # crea menu de umbralizacion
+        # menu de umbralizacion
         self.menuUmbralizacion = wx.Menu()
-        self.menuUmbralizacion.Append(8, 'Umbralizar')
+        self.menuUmbralizacion.Append(8, 'Umbralizar automático')
+        self.menuUmbralizacion.Append(9, 'Umbralizar manual')
         wx.EVT_MENU(self, 8, self.umbralizar)
+        wx.EVT_MENU(self, 9, self.mostrarumbralizarManual)
 
         self.menuBar.Append(self.Menu, '&Imagen')
         self.menuBar.Append(self.menuGrises, '&Escala de grises')
@@ -104,11 +106,32 @@ class procesamientoImagenes(wx.Frame):
         self.sizer.Add(originalButton, pos=(6, 0), span=(0, 0),
         flag=wx.BOTTOM | wx.TOP | wx.LEFT, border=25)
 
+        # label de umbralización manual
+        self.umbralizarLabel = wx.StaticText(self.panel, label='Intensidad de umbralización: ')
+        self.sizer.Add(self.umbralizarLabel, pos=(7, 0), flag=wx.RESERVE_SPACE_EVEN_IF_HIDDEN | wx.TOP | wx.LEFT, border=25)
+
+        # cuadro de texto para umbralizar manualmente
+        self.textoUmbralizar = wx.TextCtrl(self.panel, size=(40, 20), style=wx.TE_RIGHT)
+        self.sizer.Add(self.textoUmbralizar, pos=(7, 1), span=(0, 0),
+        flag=wx.RESERVE_SPACE_EVEN_IF_HIDDEN | wx.TOP, border=25)
+
+        # botón para umbralizar manualmente
+        self.umbralizarButton = wx.Button(self.panel, label='Umbralizar',
+        size=(80, 40))
+        self.umbralizarButton.Bind(wx.EVT_BUTTON, self.umbralizarManual)
+        self.sizer.Add(self.umbralizarButton, pos=(8, 0), span=(0, 0),
+        flag=wx.RESERVE_SPACE_EVEN_IF_HIDDEN | wx.BOTTOM | wx.LEFT, border=25)
+
+        # se esconden los últimos 3 controles creados
+        self.umbralizarLabel.Hide()
+        self.umbralizarButton.Hide()
+        self.textoUmbralizar.Hide()
+
         # panel donde deberia ir la imagen
         self.panelDeImagen = wx.lib.scrolledpanel.ScrolledPanel(self.panel , -1,
         size=(600, 600), style=wx.SIMPLE_BORDER)
         self.panelDeImagen.SetBackgroundColour('#FFFFFF')
-        self.sizer.Add(self.panelDeImagen, pos=(0, 2), span=(7, 1),
+        self.sizer.Add(self.panelDeImagen, pos=(0, 2), span=(9, 1),
         flag=wx.TOP | wx.LEFT | wx.BOTTOM | wx.RIGHT, border=25)
 
         # sizer dentro del panel de la imagen
@@ -525,6 +548,23 @@ class procesamientoImagenes(wx.Frame):
 
         self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
         self.panel.Refresh()
+
+    def umbralizarManual(self, event):
+        umbral = (int)(self.textoUmbralizar.GetValue())
+        for i in range(self.width):
+                for j in range(self.height):
+                    if self.img.GetRed(i, j) < umbral:
+                        self.img.SetRGB(i, j, 0, 0, 0)
+                    else:
+                        self.img.SetRGB(i, j, 255, 255, 255)
+        self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
+        self.panel.Refresh()
+
+    def mostrarumbralizarManual(self, event):
+        self.umbralizarLabel.Show()
+        self.umbralizarButton.Show()
+        self.textoUmbralizar.Show()
+
 
 
 class Histograma(wx.Frame):

@@ -1,0 +1,172 @@
+    def umbralizar(self, event):
+        if self.esBlancoNegro:
+            intensidadesDes = self.getGreenValues()
+            intensidadesOrd = np.zeros(256, dtype=int)
+            for i in range(len(intensidadesDes)):
+                intensidadesOrd[intensidadesDes[i]] += 1
+
+            umbral = 0
+            largo = len(intensidadesOrd)
+            areaBajoCurva = 0
+            pixelesTotales = self.width * self.height
+
+            for i in range(largo):
+                areaBajoCurva += intensidadesOrd[i] * i
+            umbral = areaBajoCurva / pixelesTotales
+
+            flag = True
+            while flag:
+                pixelsBackground = 0
+                totalPixelsBG = 0
+                pixelsForeground = 0
+                totalPixelsFG = 0
+
+                for i in range(int(umbral)):
+                    pixelsBackground += i * intensidadesOrd[i]
+                    totalPixelsBG += intensidadesOrd[i]
+                pixelsForeground = areaBajoCurva - pixelsBackground
+                totalPixelsFG = pixelesTotales - totalPixelsBG
+
+                t = pixelsBackground / totalPixelsBG
+                t = t + pixelsForeground / totalPixelsFG
+                t = t / 2
+
+                if umbral == t:
+                    flag = False
+                else:
+                    umbral = t
+
+            for i in range(self.width):
+                for j in range(self.height):
+                    if self.img.GetRed(i, j) < umbral:
+                        self.img.SetRGB(i, j, 0, 0, 0)
+                    else:
+                        self.img.SetRGB(i, j, 255, 255, 255)
+
+        else: # para una imagen en colores, red primero
+            intensidadesDes = self.getRedValues()
+            intensidadesOrd = np.zeros(256, dtype=int)
+            for i in range(len(intensidadesDes)):
+                intensidadesOrd[intensidadesDes[i]] += 1
+
+            umbralRed = 0
+            largo = len(intensidadesOrd)
+            areaBajoCurva = 0
+            pixelesTotales = self.width * self.height
+
+            for i in range(largo):
+                areaBajoCurva += intensidadesOrd[i] * i
+            umbralRed = areaBajoCurva / pixelesTotales
+
+            flag = True
+            while flag:
+                pixelsBackground = 0
+                totalPixelsBG = 0
+                pixelsForeground = 0
+                totalPixelsFG = 0
+
+                for i in range(int(umbralRed)):
+                    pixelsBackground += i * intensidadesOrd[i]
+                    totalPixelsBG += intensidadesOrd[i]
+                pixelsForeground = areaBajoCurva - pixelsBackground
+                totalPixelsFG = pixelesTotales - totalPixelsBG
+
+                t = pixelsBackground / totalPixelsBG
+                t = t + pixelsForeground / totalPixelsFG
+                t = t / 2
+
+                if umbralRed == t:
+                    flag = False
+                else:
+                    umbralRed = t
+
+            # green
+            intensidadesDes = self.getGreenValues()
+            intensidadesOrd = np.zeros(256, dtype=int)
+            for i in range(len(intensidadesDes)):
+                intensidadesOrd[intensidadesDes[i]] += 1
+
+            umbralGreen = 0
+            largo = len(intensidadesOrd)
+            areaBajoCurva = 0
+            pixelesTotales = self.width * self.height
+
+            for i in range(largo):
+                areaBajoCurva += intensidadesOrd[i] * i
+            umbralGreen = areaBajoCurva / pixelesTotales
+
+            flag = True
+            while flag:
+                pixelsBackground = 0
+                totalPixelsBG = 0
+                pixelsForeground = 0
+                totalPixelsFG = 0
+
+                for i in range(int(umbralGreen)):
+                    pixelsBackground += i * intensidadesOrd[i]
+                    totalPixelsBG += intensidadesOrd[i]
+                pixelsForeground = areaBajoCurva - pixelsBackground
+                totalPixelsFG = pixelesTotales - totalPixelsBG
+
+                t = pixelsBackground / totalPixelsBG
+                t = t + pixelsForeground / totalPixelsFG
+                t = t / 2
+
+                if umbralGreen == t:
+                    flag = False
+                else:
+                    umbralGreen = t
+
+            # BLUE
+            intensidadesDes = self.getBlueValues()
+            intensidadesOrd = np.zeros(256, dtype=int)
+            for i in range(len(intensidadesDes)):
+                intensidadesOrd[intensidadesDes[i]] += 1
+
+            umbralBlue = 0
+            largo = len(intensidadesOrd)
+            areaBajoCurva = 0
+            pixelesTotales = self.width * self.height
+
+            for i in range(largo):
+                areaBajoCurva += intensidadesOrd[i] * i
+            umbralBlue = areaBajoCurva / pixelesTotales
+
+            flag = True
+            while flag:
+                pixelsBackground = 0
+                totalPixelsBG = 0
+                pixelsForeground = 0
+                totalPixelsFG = 0
+
+                for i in range(int(umbralBlue)):
+                    pixelsBackground += i * intensidadesOrd[i]
+                    totalPixelsBG += intensidadesOrd[i]
+                pixelsForeground = areaBajoCurva - pixelsBackground
+                totalPixelsFG = pixelesTotales - totalPixelsBG
+
+                t = pixelsBackground / totalPixelsBG
+                t = t + pixelsForeground / totalPixelsFG
+                t = t / 2
+
+                if umbralBlue == t:
+                    flag = False
+                else:
+                    umbralBlue = t
+
+
+            for i in range(self.width):
+                for j in range(self.height):
+                    r = 0
+                    g = 0
+                    b = 0
+                    if self.img.GetRed(i, j) > umbralRed:
+                        r = 255
+                    if self.img.GetGreen(i, j) > umbralGreen:
+                        g = 255
+                    if self.img.GetBlue(i, j) > umbralBlue:
+                        b = 255
+                    self.img.SetRGB(i, j, r, g, b)
+
+        self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
+        self.panel.Refresh()
