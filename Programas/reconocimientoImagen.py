@@ -19,18 +19,18 @@ class ventanaGrayScale(wx.Frame):
 
         # AGREGA BOTON PARA ABRIR LA IMAGEN (SU EVENTO ESTÁ MAS ABAJO)
         self.photoTxt = wx.TextCtrl(self.panel, size=(200, -1))
-        imageButton = wx.Button(self.panel, label='Encontrar a pikachu',
+        imageButton = wx.Button(self.panel, label='Subir imagen',
         size=(140, 80))
         imageButton.Bind(wx.EVT_BUTTON, self.onBrowse)
         self.sizer.Add(imageButton, pos=(0, 0), span=(0, 2),
         flag=wx.TOP | wx.LEFT | wx.RIGHT, border=25)
 
         # AGREGA BOTON PARA CAMBIAR LA IMAGEN A SU ESCALA DE GRISES
-        escalaButton = wx.Button(self.panel,
-        label='Convertir a \nescala de grises',
+        imageAnalizarBoton = wx.Button(self.panel,
+        label='Subir imagen a analizar',
         size=(140, 80))
-        escalaButton.Bind(wx.EVT_BUTTON, self.convertir)
-        self.sizer.Add(escalaButton, pos=(1, 0), span=(0, 2),
+        imageAnalizarBoton.Bind(wx.EVT_BUTTON, self.convertir)
+        self.sizer.Add(imageAnalizarBoton, pos=(1, 0), span=(0, 2),
         flag=wx.TOP | wx.LEFT | wx.RIGHT, border=25)
 
         # LUGAR DONDE DEBERIA IR LA IMAGEN
@@ -44,9 +44,6 @@ class ventanaGrayScale(wx.Frame):
         self.sizer.Fit(self)
 
     def onBrowse(self, event):
-        """
-        Browse for file
-        """
         wildcard = "JPEG files (*.jpg)|*.jpg"
         dialog = wx.FileDialog(None, "Choose a file", wildcard=wildcard,
                                 style=wx.FD_OPEN)
@@ -56,8 +53,8 @@ class ventanaGrayScale(wx.Frame):
         self.onView()
 
     def onView(self):
-
-        self.img_para_analizar = cv2.imread('smashbros.jpg', 0)
+        self.img_original = wx.Image(self.photoTxt.GetValue(), wx.BITMAP_TYPE_ANY)
+        self.img_para_analizar = cv2.imread(self.photoTxt.GetValue(), 0)
         img_copia = self.img_para_analizar.copy()
         template = cv2.imread("pikachu.jpg", 0)
         w, h = template.shape[::-1]
@@ -65,7 +62,7 @@ class ventanaGrayScale(wx.Frame):
         img = img_copia.copy()
         method = eval('cv2.TM_SQDIFF_NORMED')
 
-        res = cv2.matchTemplate(img, template, method)
+        res = cv2.matchTemplate(self.img_para_analizar, template, method)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
         top_left = min_loc
@@ -88,11 +85,10 @@ class ventanaGrayScale(wx.Frame):
             NewW = self.PhotoMaxSize * W / H
         self.img = self.img.Scale(NewW, NewH)
 
-        self.imgCtrl.SetBitmap(wx.Bitmap(self.img))
+        self.imgCtrl.SetBitmap(wx.Bitmap(self.img_original))
         self.panel.Refresh()
 
     def convertir(self, event):
-
         width = self.img.GetWidth()
         height = self.img.GetHeight()
 
