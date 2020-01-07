@@ -16,7 +16,7 @@ def main():
 def escribirMatriz(M):
     for i in range(len(M)):
         for j in range(len(M[i])):
-            print(str(M[i][j]) + " ", end='')
+            print(str(M[i][j]) + " ", '')
         print()
 
 
